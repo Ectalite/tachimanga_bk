@@ -14,8 +14,7 @@ cursor = conn.cursor()
 # Get all manga in library
 cursor.execute("""
                 SELECT id, source, url, title, artist, author, description, genre, status, thumbnail_url, in_library_at
-                FROM Manga
-                WHERE in_library = 1;
+                FROM Manga;
                 """)
 manga_rows = cursor.fetchall()
 
@@ -45,6 +44,19 @@ for manga_row in manga_rows:
             "dateUpload": str(chapter_row[4]),
             "chapterNumber": chapter_row[5]
         })
+
+    # Get read history for this manga
+    cursor.execute("""
+                    SELECT Chapter.url, History.last_read_at, History.read_duration
+                    FROM History, Chapter
+                    WHERE manga_id = ? and History.last_chapter_id = Chapter.id;
+                   """, (manga_id,))
+    history_data = []
+    for row in cursor.fetchall():
+        history_data.append({"url": row[0],
+                            "lastRead": row[1],
+                            "readDuration": row[2]
+                             })
 
     # Format manga
     manga_data = {
