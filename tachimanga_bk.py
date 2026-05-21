@@ -14,7 +14,8 @@ cursor = conn.cursor()
 # Get all manga in library
 cursor.execute("""
                 SELECT id, source, url, title, artist, author, description, genre, status, thumbnail_url, in_library_at
-                FROM Manga;
+                FROM Manga
+                WHERE in_library = 1;
                 """)
 manga_rows = cursor.fetchall()
 
